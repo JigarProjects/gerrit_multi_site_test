@@ -6,7 +6,11 @@ Each data center would have one gerrit instance.
 We will have Kafka, zookeeper and HAProxy in separate DC.
 
 To setup 
-``docker-compose up``
+
+```
+docker-compose build --no-cache
+docker-compose up -d
+```
 
 To cleanup 
 ``docker-compose down -v``

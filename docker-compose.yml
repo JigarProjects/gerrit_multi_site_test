@@ -1,30 +1,48 @@
-version: '3.9'
+version: "3.9"
 
 services:
   gerrit_1:
-    image: gerritcodereview/gerrit:3.2.6
-    volumes:
-      - /var/gerrit/instance-1/git:/var/gerrit/git
-      - /var/gerrit/instance-1/index:/var/gerrit/index
-      - /var/gerrit/instance-1/cache:/var/gerrit/cache
-      - /var/gerrit/instance-1/etc:/var/gerrit/etc
-      - /var/gerrit/instance-1/db:/var/gerrit/db
-      - /var/gerrit/instance-1/mail:/var/gerrit/etc/mail
+    build: gerrit_1
+    image: gerrit_1
     ports:
       - "39418:29418"
       - "11080:8080"
+    depends_on:
+      - ldap
+    volumes:
+      - /home/jigar/projects/personal/gerrit_home/instance-1/git:/var/gerrit/git
+      - /home/jigar/projects/personal/gerrit_home/instance-1/index:/var/gerrit/index
+      - /home/jigar/projects/personal/gerrit_home/instance-1/cache:/var/gerrit/cache
+      - /home/jigar/projects/personal/gerrit_home/instance-1/etc:/var/gerrit/etc
+      - /home/jigar/projects/personal/gerrit_home/instance-1/db:/var/gerrit/db
+      - /home/jigar/projects/personal/gerrit_home/instance-1/mail:/var/gerrit/etc/mail
     container_name: gerrit_1
 
   gerrit_2:
-    image: gerritcodereview/gerrit:3.2.6
-    volumes:
-      - /var/gerrit/instance-2/git:/var/gerrit/git
-      - /var/gerrit/instance-2/index:/var/gerrit/index
-      - /var/gerrit/instance-2/cache:/var/gerrit/cache
-      - /var/gerrit/instance-2/etc:/var/gerrit/etc
-      - /var/gerrit/instance-2/db:/var/gerrit/db
-      - /var/gerrit/instance-1/mail:/var/gerrit/etc/mail
+    build: gerrit_2
+    image: gerrit_2
     ports:
       - "49418:29418"
       - "10080:8080"
+    depends_on:
+      - ldap
+    volumes:
+      - /home/jigar/projects/personal/gerrit_home/instance-2/git:/var/gerrit/git
+      - /home/jigar/projects/personal/gerrit_home/instance-2/index:/var/gerrit/index
+      - /home/jigar/projects/personal/gerrit_home/instance-2/cache:/var/gerrit/cache
+      - /home/jigar/projects/personal/gerrit_home/instance-2/etc:/var/gerrit/etc
+      - /home/jigar/projects/personal/gerrit_home/instance-2/db:/var/gerrit/db
+      - /home/jigar/projects/personal/gerrit_home/instance-2/mail:/var/gerrit/etc/mail
     container_name: gerrit_2
+
+  ldap:
+    image: osixia/openldap
+    ports:
+      - "389:389"
+      - "636:636"
+    environment:
+      - LDAP_ADMIN_PASSWORD=secret
+    volumes:
+      - /var/gerrit/ldap/var:/var/lib/ldap
+      - /var/gerrit/ldap/etc:/etc/ldap/slapd.d
+    container_name: ldap
