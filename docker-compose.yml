@@ -9,14 +9,9 @@ services:
       - "11080:8080"
     depends_on:
       - ldap
-    volumes:
-      - /home/jigar/projects/personal/gerrit_home/instance-1/git:/var/gerrit/git
-      - /home/jigar/projects/personal/gerrit_home/instance-1/index:/var/gerrit/index
-      - /home/jigar/projects/personal/gerrit_home/instance-1/cache:/var/gerrit/cache
-      - /home/jigar/projects/personal/gerrit_home/instance-1/etc:/var/gerrit/etc
-      - /home/jigar/projects/personal/gerrit_home/instance-1/db:/var/gerrit/db
-      - /home/jigar/projects/personal/gerrit_home/instance-1/mail:/var/gerrit/etc/mail
     container_name: gerrit_1
+    environment:
+      - CANONICAL_WEB_URL=http://localhost:11080
 
   gerrit_2:
     build: gerrit_2
@@ -26,14 +21,9 @@ services:
       - "10080:8080"
     depends_on:
       - ldap
-    volumes:
-      - /home/jigar/projects/personal/gerrit_home/instance-2/git:/var/gerrit/git
-      - /home/jigar/projects/personal/gerrit_home/instance-2/index:/var/gerrit/index
-      - /home/jigar/projects/personal/gerrit_home/instance-2/cache:/var/gerrit/cache
-      - /home/jigar/projects/personal/gerrit_home/instance-2/etc:/var/gerrit/etc
-      - /home/jigar/projects/personal/gerrit_home/instance-2/db:/var/gerrit/db
-      - /home/jigar/projects/personal/gerrit_home/instance-2/mail:/var/gerrit/etc/mail
     container_name: gerrit_2
+    environment:
+      - CANONICAL_WEB_URL=http://localhost:10080
 
   ldap:
     image: osixia/openldap
@@ -46,3 +36,25 @@ services:
       - /var/gerrit/ldap/var:/var/lib/ldap
       - /var/gerrit/ldap/etc:/etc/ldap/slapd.d
     container_name: ldap
+
+
+  ldap-admin:
+    image: osixia/phpldapadmin
+    ports:
+      - "6443:443"
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    ports:
+      - "2181:2181"
+
+  kafka-broker:
+    image: wurstmeister/kafka:2.12-2.1.0
+    ports:
+      - "9092:9092"
+    container_name: kafka-broker
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka-broker
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
