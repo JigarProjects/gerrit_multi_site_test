@@ -6,7 +6,8 @@ services:
     image: gerrit_1
     ports:
       - "39418:29418"
-      - "11080:8080"
+      - "10080:8080"
+      - "10022:22"
     depends_on:
       - ldap
     container_name: gerrit_1
@@ -18,7 +19,8 @@ services:
     image: gerrit_2
     ports:
       - "49418:29418"
-      - "10080:8080"
+      - "11080:8080"
+      - "11022:22"
     depends_on:
       - ldap
     container_name: gerrit_2

@@ -28,8 +28,32 @@ Steps:
     Password: secret
    ```
 
-3. Login to gerrit-1 and setup ssh key for gerrit_2
+3. generate ssh key on both gerrit docker images
    ```
-   $ docker exec -it gerrit_2 bash
-   $ 
+   docker exec -it gerrit_2 bash
+      ssh-keygen ssh-keygen -t rsa -n test -N '' -f /var/gerrit/.ssh/id_rsa
+   docker exec -it gerrit_2 bash
+      ssh-keygen ssh-keygen -t rsa -n test -N '' -f /var/gerrit/.ssh/id_rsa
    ```
+
+4. Adding authorized key
+   
+   add gerrit_2's id_rsa.pub to gerrit_1
+   ```
+   docker exec -it gerrit_1 bash
+      echo "GERRIT_1's public key" > /var/gerrit/.ssh/authorized_keys
+   ```
+
+5. Override sshd config on both containers
+
+   '''
+   docker exec -u root -it gerrit_1 bash
+      cat /etc/sssh/sshd_config
+      AuthorizedKeysFile	/var/gerrit/.ssh/authorized_keys
+   ''''
+   
+6. start ssh service
+   '''
+   docker exec -it gerrit_1 bash
+      /usr/sbin/sshd & 
+   '''
